@@ -1,80 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Login Page</title>
-  <style>
-    body {
-      img {
-      width: 450px;             /* adjust size */
-      margin-bottom: 20px;      /* space between image and form */
-    }
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { createClient } from "@supabase/supabase-js";
+import { useNavigation } from "@react-navigation/native";
 
-      background-color: black;
-      color: white; 
-      
-      display: grid;
-      place-items: center;  
-      height: 100vh;
-      margin: 0;
-        
-    }
-    
-    .login-form {
-      width: 300px;
-      padding: 20px;
-      background: #222;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px; 
-    }
+const supabaseUrl = "https://YOUR-PROJECT-URL.supabase.co"; //change this
+const supabaseAnonKey = "YOUR-ANON-KEY"; //change this
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-    .login-form input,
-    .login-form button {
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-    }
-
-    .login-form button {
-      background: #555;
-      color: white;
-      cursor: pointer;
-    }
-
-    .login-form button:hover {
-      background: #777;
-    }
-
-  </style>
-
-</head>
-<body>
-  <img src="Walkbound_logo.png" alt="Site Logo">
-
-
-  <form class="login-form">
-    <input type="text" placeholder="Username">
-    <input type="password" placeholder="Password">
-    <button type="submit">Login</button>
-    <div class="create-account">
-      <p> <a href="register.html">Create an account</a></p> 
-    </div>
-
-  </form>
-  <script src="login.js"></script>
-</body>
-</html>
-
-function LoginScreen = () {
+export default function AuthPage() {
+    const [mode, setMode] = useState("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const navigation = useNavigation();
 
-    function handleLogin() {
-        if (!password || !email) {
-            // Error
+    const handleAuth = async () => {
+        setMessage("");
+
+        if (!email || !password) {
+            setMessage("Please enter your email and password.");
             return;
         }
-        //...
-    }
+    
+        try {
+            setLoading(true);
+
+            if (mode === "login") {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+                });
+                if (error) throw error;
+                setMessage("Login successful!");
+                console.log("Session:", data.session);
+            } else {
+                const { error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                setMessage("Check your inbox to verify your email!"); //it says that email confirmation is default in supabase but if not used can be deleted
+            }
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "Home" }],
+            });
+        } catch (err) {
+            setMessage("Error: " + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>{mode === "login" ? "Login" : "Create Account"}</Text>
+
+            <TextInput
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                style={styles.input}
+                keyboardType="email-address"
+            />
+
+            <TextInput
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                style={styles.input}
+                secureTextEntry
+            />
+
+            <TouchableOpacity onPress={handleAuth} disabled={loading} style={styles.button}>
+                <Text style={styles.buttonText}>
+                {loading
+                    ? mode === "login"
+                    ? "Logging in..."
+                    : "Signing up..."
+                    : mode === "login"
+                    ? "Login"
+                    : "Sign Up"}
+                </Text>
+            </TouchableOpacity>
+
+            {message ? <Text style={styles.message}>{message}</Text> : null}
+
+            <Text style={styles.toggle} onPress={() => setMode(mode === "login" ? "signup" : "login")}>
+                {mode === "login" ? "Sign up" : "Log in"}
+            </Text>
+        </View>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#0B0B0C",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+    },
+    title: { color: "white", fontSize: 24, marginBottom: 20 },
+    input: {
+        backgroundColor: "#2C2C2E",
+        color: "white",
+        padding: 12,
+        borderRadius: 6,
+        width: "100%",
+        marginBottom: 12,
+    },
+    button: {
+        backgroundColor: "#2132ceff",
+        padding: 12,
+        borderRadius: 6,
+        width: "100%",
+        alignItems: "center",
+    },
+    buttonText: { color: "white", fontWeight: "600" },
+    message: { color: "white", marginTop: 10 },
+    toggle: { color: "#2132ceff", marginTop: 15 },
+});
