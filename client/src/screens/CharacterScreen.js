@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {View, Text, Image, StyleSheet, TouchableOpacity, Modal,} from "react-native";
 import { createClient } from "@supabase/supabase-js";
-import { useNavigation } from "@react-navigation/native";
 
 const supabaseUrl = "https://YOUR-PROJECT-URL.supabase.co"; // change this
 const supabaseAnonKey = "YOUR-ANON-KEY"; // change this
@@ -10,7 +9,6 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export default function UserProfilePage() {
     const [userData, setUserData] = useState(null);
     const [modalVisible, setModalVisible] = useState(true); 
-    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -62,13 +60,6 @@ export default function UserProfilePage() {
                                 <Text style={styles.modalStats}>
                                     Str: {userData.str} | Int: {userData.int} | Sta: {userData.sta}
                                 </Text>
-
-                                <TouchableOpacity
-                                    onPress={() => navigation.navigate("Home")}
-                                    style={styles.closeButton}
-                                >
-                                    <Text style={{ color: "white" }}>Back to Home</Text>
-                                </TouchableOpacity>
                             </>
                         ) : (
                             <Text style={{ color: "white" }}>Loading...</Text>
