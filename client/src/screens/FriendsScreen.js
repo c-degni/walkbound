@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import {View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Modal,} from "react-native";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://YOUR-PROJECT-URL.supabase.co"; // change this
-const supabaseAnonKey = "YOUR-ANON-KEY"; // change this
+const supabaseUrl = env.SURL; // change this
+const supabaseAnonKey = env.SBK; // change this
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function LeaderboardPage() {

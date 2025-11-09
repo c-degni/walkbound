@@ -307,7 +307,7 @@ export default function BossFightScreen() {
                                             {/* Player (back view) */}
                                             <View style={styles.battlePlayerSection}>
                                                 <Image 
-                                                    source={require('../assets/characters/warrior_back.png')}
+                                                    source={require('../assets/characters/warrior.png')}
                                                     style={styles.battlePlayerImage}
                                                     resizeMode="contain"
                                                 />

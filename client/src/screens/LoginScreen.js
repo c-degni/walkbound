@@ -4,8 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { useNavigation } from "@react-navigation/native";
 import { signIn, register } from "../api";
 
-const supabaseUrl = env.supabaseUrl; //change this
-const supabaseAnonKey = env.supabaseAnonKey; //change this
+const supabaseUrl = env.SURL; //change this
+const supabaseAnonKey = env.SBK; //change this
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function AuthPage() {

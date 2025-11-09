@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native-gesture-handler";
+// import { ScrollView } from "react-native-gesture-handler";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { fetchCharacterData, syncStepsToServer } from "../api";
 import AppleHealthKit from 'react-native-health';
@@ -67,12 +67,12 @@ export default function HomeScreen () {
 
     const getCharacterImage = () => {
         switch (character.equipment?.type) {
-            case 'wizard_hat':
-                return require('../assets/characters/warrior_wizard_hat.png');
-            case 'sword':
-                return require('../assets/characters/warrior_sword.png');
-            case 'chestplate':
-                return require('../assets/characters/warrior_chestplate.png');
+            // case 'wizard_hat':
+            //     return require('../assets/characters/warrior_wizard_hat.png');
+            // case 'sword':
+            //     return require('../assets/characters/warrior_sword.png');
+            // case 'chestplate':
+            //     return require('../assets/characters/warrior_chestplate.png');
             default:
                 return require('../assets/characters/warrior.png');
         }
@@ -91,7 +91,7 @@ export default function HomeScreen () {
                 <View style={styles.characterHeader}>
                     <View style={styles.avatarContainer}>
                         <Image 
-                            source={require(getCharacterImage())} 
+                            source={getCharacterImage()} 
                             style={styles.characterImage}
                             resizeMode="contain"
                         />
