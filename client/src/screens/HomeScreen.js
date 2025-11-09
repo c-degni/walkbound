@@ -16,7 +16,7 @@ export default function HomeScreen () {
     useEffect(() => {
         fetchSteps();
         loadCharacter();
-        const interval = setInterval(fetchSteps, 60000);
+        const interval = setInterval(fetchSteps, 6000);
         return () => clearInterval(interval);
     }, []);
 
@@ -60,9 +60,9 @@ export default function HomeScreen () {
         if (data) setCharacter(data);
     };
 
-    const setDailyFocus = (stat) => {
+    const setDailyFocus = async (stat) => {
         setDailyFocus(stat);
-        // await updateDailyFocus(stat); // uncomment this
+        await updateDailyFocus(stat); 
     };
 
     const getCharacterImage = () => {
