@@ -1,5 +1,7 @@
 import { ScrollView } from "react-native-gesture-handler";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { fetchCharacterData, syncStepsToServer } from "../api";
+import AppleHealthKit from 'react-native-health';
 
 export default function HomeScreen () {
     const [stepsToday, setStepsToday] = useState(0);
@@ -49,6 +51,19 @@ export default function HomeScreen () {
         // TODO: SEND TO THE BACKEND (J AND Z!!)
     };
 
+    const getCharacterImage = () => {
+        switch (character.equipment?.type) {
+            case 'wizard_hat':
+                return require('../assets/characters/warrior_wizard_hat.png');
+            case 'sword':
+                return require('../assets/characters/warrior_sword.png');
+            case 'sword':
+                return require('../assets/characters/warrior_chestplate.png');
+            default:
+                return require('../assets/characters/warrior.png');
+        }
+    };
+
     return (
         <ScrollView style={styles.container}>
             {/* Header */}
@@ -60,14 +75,17 @@ export default function HomeScreen () {
             {/* Character Preview */}
             <View style={styles.characterCard}>
                 <View style={styles.characterHeader}>
-                    <View style={styles.avatarCircle}>
-                        <Text style={styles.avatarText}>⚔️</Text>
+                    <View style={styles.avatarContainer}>
+                        <Image 
+                            source={require(getCharacterImage())} 
+                            style={styles.characterImage}
+                            resizeMode="contain"
+                        />
                     </View>
-
                     <View style={styles.characterInfo}>
                         <Text style={styles.characterName}>Warrior</Text>
                         <View style={styles.levelBadge}>
-                        <Text style={styles.levelText}>Lv. {character.level}</Text>
+                        <Text style={styles.levelText}>Lvl. {character.level}</Text>
                     </View>
 
                     <View style={styles.powerRow}>
@@ -95,7 +113,7 @@ export default function HomeScreen () {
                 <View style={styles.stepProgress}>
                     <View style={[styles.stepProgressFill, { width: `${Math.min((todaySteps / 10000) * 100, 100)}%` }]} />
                 </View>
-                <Text style={styles.stepGoal}>Goal: 8,000</Text>
+                <Text style={styles.stepGoal}>Goal: 10,000</Text>
             </View>
 
             {/* Daily Stat Focus */}
@@ -188,17 +206,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 15
     },
-    avatarCircle: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        backgroundColor: '#d4af37',
+    avatarContainer: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#1a1410',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
-        borderColor: '#8b4513'
+        borderColor: '#d4af37',
+        overflow: 'hidden'
     },
-    avatarText: { fontSize: 32 },
+    characterImage: {
+        width: 70,
+        height: 70
+    },
     characterInfo: { 
         flex: 1, 
         marginLeft: 15 
