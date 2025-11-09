@@ -18,7 +18,21 @@ AppleHealthKit.initHealthKit(permissions, (error) => {
     // Permissions granted!
   });
 
-const calculateStepRate = (date) => {
+async function calculateStepRate (date) { 
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999)
+
+    const qOptions = {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+    };
+
+    try {
+
+        const hourlySteps = await new Promise((resolve, reject) => {AppleHealthKit.getStepCount})
+    }
     // const now = new Date();
     // const hoursSinceMidnight = now.getHours() + now.getMinutes() / 60;
     // setStepRate(Math.round(steps / (hoursSinceMidnight || 1)));
