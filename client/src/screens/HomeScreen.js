@@ -10,7 +10,9 @@ export default function HomeScreen () {
     const [character, setCharacter] = useState({
         level: 1,
         powerRanking: 0,
-        stats: { strength: 10, intelligence: 10, endurance: 10 }
+        strength: 10, 
+        intelligence: 10, 
+        endurance: 10
     });
 
     useEffect(() => {
@@ -20,17 +22,31 @@ export default function HomeScreen () {
         return () => clearInterval(interval);
     }, []);
 
+    function updateLevel(steps) {
+        return character.level += (steps / 1000);
+    };
+
+    function updatePR(steps) {
+        return 1 + (.23 * character.strength + .23 * character.intelligence + .23 * character.endurance);
+    };
+
     const fetchSteps = () => {
         const options = {
             date: new Date().toISOString(),
             includeManuallyAdded: false
         };
 
-        AppleHealthKit.getStepCount(options, (err, results) => {
+        AppleHealthKit.getStepCount(options, async (err, results) => {
             if (!err) {
                 setStepsToday(results.value);
                 calculateStepRate(results.value);
                 syncStepsToServer(results.value);
+                setCharacter(prev => ({
+                    ...prev,
+                    level: updateLevel(results.value),
+                    powerRanking: updatePR(results.value),
+                    // increase update stats
+                }));
             }
         });
     };
@@ -48,7 +64,7 @@ export default function HomeScreen () {
 
     const setDailyFocus = (stat) => {
         setDailyFocus(stat);
-        // TODO: SEND TO THE BACKEND (J AND Z!!)
+        // await updateDailyFocus(stat); // uncomment this
     };
 
     const getCharacterImage = () => {
@@ -57,7 +73,7 @@ export default function HomeScreen () {
                 return require('../assets/characters/warrior_wizard_hat.png');
             case 'sword':
                 return require('../assets/characters/warrior_sword.png');
-            case 'sword':
+            case 'chestplate':
                 return require('../assets/characters/warrior_chestplate.png');
             default:
                 return require('../assets/characters/warrior.png');
@@ -98,9 +114,9 @@ export default function HomeScreen () {
 
             {/* Quick Stats Preview */}
             <View style={styles.quickStats}>
-                <StatPill icon="⚔️" value={character.stats.strength} color="#d4af37" />
-                <StatPill icon="🧙" value={character.stats.intelligence} color="#4a9eff" />
-                <StatPill icon="🛡️" value={character.stats.endurance} color="#8b4513" />
+                <StatPill icon="⚔️" value={character.strength} color="#d4af37" />
+                <StatPill icon="🧙" value={character.intelligence} color="#4a9eff" />
+                <StatPill icon="🛡️" value={character.endurance} color="#8b4513" />
             </View>
 
             {/* Steps Card - Main Focus */}
