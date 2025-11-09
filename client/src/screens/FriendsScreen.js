@@ -76,10 +76,10 @@ export default function LeaderboardPage() {
                                 </Text>
 
                                 <TouchableOpacity
-                                    onPress={() => setModalVisible(false)}
-                                    style={styles.closeButton}
+                                onPress={() => setModalVisible(false)}
+                                style={styles.closeButton}
                                 >
-                                    <Text style={{ color: "white" }}>Close</Text>
+                                <Text style={{ color: "white" }}>Close</Text>
                                 </TouchableOpacity>
                             </>
                         )}
