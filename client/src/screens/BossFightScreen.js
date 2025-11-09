@@ -1,4 +1,5 @@
-import { fetchCharacterData } from "../api";
+import { fetchCharacterData, attackBoss, fetchCurrentBoss } from "../api";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image, Animated } from 'react-native';
 
 export default function BossFightScreen() {
     const [boss, setBoss] = useState(null);
