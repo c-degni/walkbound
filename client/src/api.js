@@ -2,6 +2,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 let authToken = null;
+let bossUserId = '';
 
 const supabase = createClient(process.env.API_URL, process.env.API_KEY)
 
@@ -180,6 +181,46 @@ export const addFriends = async (friendId) => {
     }
   };
 
+export const acceptFriendRequest = async (senderId) => {
+  try {
+    // 1. Get the current user (the one accepting the request)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error("You must be logged in to accept a request.");
+    }
+
+    const currentUserId = user.id;
+
+    // 2. Perform the update
+    // We find the row where:
+    // - The 'user_id' is the person who sent it (senderId)
+    // - The 'friend_id' is me (currentUserId)
+    // - The 'status' is 'pending'
+    const { data, error } = await supabase
+      .from('friends')
+      .update({ status: 'accepted' })
+      .eq('user_id', senderId)       // Match the sender
+      .eq('friend_id', currentUserId) // Match me (the receiver)
+      .eq('status', 'pending')        // Only update if it's still pending
+      .select();                      // Return the updated row
+
+    if (error) {
+      throw error;
+    }
+
+    // 3. Check if the update was successful
+    if (data && data.length > 0) {
+      Alert.alert("Friend Added!", "You are now friends.");
+    } else {
+      // This happens if no row matched (e.g., request was already accepted/deleted)
+      Alert.alert("Error", "Could not find a pending request from this user.");
+    }
+
+  } catch (error) {
+    console.error("Error accepting friend request:", error.message);
+    Alert.alert("Error", error.message);
+  }
+};
 
 export const fetchFriends = async () => {
     try {

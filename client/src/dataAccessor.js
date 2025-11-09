@@ -16,29 +16,47 @@ AppleHealthKit.initHealthKit(permissions, (error) => {
       return;
     }
     // Permissions granted!
-  });
+});
 
+// The calculateStepRate function takes in a date for its parameter and returns a value "maxStepsInOneHour". 
 async function calculateStepRate (date) { 
+    //The next four lines are simply setting the boundaries for a day (midnight to 11:59)
     const startDate = new Date(date);
     startDate.setHours(0, 0, 0, 0);
     const endDate = new Date(date);
     endDate.setHours(23, 59, 59, 999)
 
+    //"Hey HealthKit, please look at all the step data between 12:00 AM and 11:59 PM on this specific day. Then, give me back a list where each item in the list is the total steps for each hour in that window."
     const qOptions = {
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString()
     };
 
     try {
+        const hourlySteps = await new Promise((resolve, reject) => {
+            AppleHealthKit.getDailyStepCountSamples(qOptions, (err, results) => {
+                if (err) {
+                    return reject(new Error(`HealthKit query failed: ${err.message}`));
+                }
+                return resolve(results);
+            });
+        });
+        if (!hourlySteps || hourlySteps.length === 0) {
+            console.log(`No step data found for ${startDate.toDateString()}`);
+            return 0; // Return 0 if no steps were recorded
+        }
+        const allStepValues = hourlySteps.map(hour => hour.value);
+        const maxStepsInOneHour = Math.max(...allStepValues);
 
-        const hourlySteps = await new Promise((resolve, reject) => {AppleHealthKit.getStepCount})
+        return maxStepsInOneHour;
+
+    } catch (error) {
+        console.error("Error in getHighestHourlyStepsForDay:", error);
+        return 0; // Return 0 on error
     }
-    // const now = new Date();
-    // const hoursSinceMidnight = now.getHours() + now.getMinutes() / 60;
-    // setStepRate(Math.round(steps / (hoursSinceMidnight || 1)));
+}
 
-    // TODO: make this function return the steps per hour of the hour with the greatest number of steps in the day
-};
+    
 
 const fetchSteps = () => {
     const options = {
