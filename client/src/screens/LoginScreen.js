@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { createClient } from "@supabase/supabase-js";
 import { useNavigation } from "@react-navigation/native";
+import { signIn, register } from "../api";
 
-const supabaseUrl = "https://YOUR-PROJECT-URL.supabase.co"; //change this
-const supabaseAnonKey = "YOUR-ANON-KEY"; //change this
+const supabaseUrl = env.supabaseUrl; //change this
+const supabaseAnonKey = env.supabaseAnonKey; //change this
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function AuthPage() {
     const [mode, setMode] = useState("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const navigation = useNavigation();
@@ -27,17 +29,12 @@ export default function AuthPage() {
             setLoading(true);
 
             if (mode === "login") {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-                });
-                if (error) throw error;
-                setMessage("Login successful!");
-                console.log("Session:", data.session);
+                signIn(email, password);
             } else {
-                const { error } = await supabase.auth.signUp({ email, password });
-                if (error) throw error;
-                setMessage("Check your inbox to verify your email!"); //it says that email confirmation is default in supabase but if not used can be deleted
+                // const { error } = await supabase.auth.signUp({ email, password });
+                // if (error) throw error;
+                // setMessage("Check your inbox to verify your email!"); //it says that email confirmation is default in supabase but if not used can be deleted
+                register(email, password, username || null);
             }
 
             navigation.reset({
@@ -70,6 +67,16 @@ export default function AuthPage() {
                 style={styles.input}
                 secureTextEntry
             />
+
+            if (mode === 'Sign Up') {
+                <TextInput
+                    placeholder="Name"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={styles.input}
+                    secureTextEntry
+                />
+            }
 
             <TouchableOpacity onPress={handleAuth} disabled={loading} style={styles.button}>
                 <Text style={styles.buttonText}>

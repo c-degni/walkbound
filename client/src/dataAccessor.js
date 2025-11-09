@@ -56,19 +56,24 @@ async function calculateStepRate (date) { 
     }
 }
 
-    
-
 const fetchSteps = () => {
     const options = {
-        date: new Date().toISOString(),
-        includeManuallyAdded: false
+      date: new Date().toISOString(), // Correctly gets today's steps
+      includeManuallyAdded: false
     };
-
+  
     AppleHealthKit.getStepCount(options, (err, results) => {
-        if (!err) {
-            setStepsToday(results.value);
-            calculateStepRate(results.value);
-            // syncStepsToServer(results.value);
-        }
+      if (err) {
+        console.error("Error fetching total steps: ", err);
+        return;
+      }
+  
+      if (results) {
+        const totalStepsToday = results.value;
+        
+        setStepsToday(totalStepsToday);
+        
+        syncStepsToServer(totalStepsToday);
+      }
     });
-};
+  };    

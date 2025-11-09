@@ -26,6 +26,16 @@ export const login = async (username, password) => {
     }
 };
 
+export const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+    })
+    if (error) throw error;
+    setMessage("Login successful!");
+    console.log("Session:", data.session);
+}
+
 /**
  * 
  * @param {string} email The email associated with the account 
@@ -33,20 +43,28 @@ export const login = async (username, password) => {
  * @param {string} name The username associated with the account
  */
 export const register = async (email, password, name) => {
+    if (name == null) {
+        
+    }
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
     })
 
     if (error) {
-        console.error('Error signing up:', error)
-        return null
+        console.error('Error signing up:', error);
+        return null;
     }
 
     const user = data.user
     if (!user) {
-        console.error('No user returned from signUp')
-        return null
+        console.error('No user returned from signUp');
+        return null;
+    }
+
+    if (!name) {
+        console.error('No username provided');
+        return null;
     }
 
     // Inserting a new user into the users table
@@ -55,6 +73,7 @@ export const register = async (email, password, name) => {
             user_id: user.id, // from Supabase Auth
             email: user.email,
             name,
+            created_at: new Date().toISOString(),
             steps: 0,
         },
     ])
@@ -100,6 +119,7 @@ export const updateDailySteps = async (stepsAtStart, date) => {
         .from('daily')
         .update({ steps : newSteps })
         .eq('user_id', user.id)
+        .eq('date', date.toISOString())
         .select()
     
     if (updateError) {
@@ -115,28 +135,21 @@ export const syncStepsToServer = async (newSteps) => {
         .from("users")
         .update( {steps: newSteps } )
         .eq('user_id', userId)
-        .select()
+        .select();
 };
 
-// export const syncStepsToServer = async (steps) => {
+// export const updateDailyFocus = async (focus) => {
+//     const response = await supabase
+//         .from('daily')
 
-//     // try {
-//     //     const response = await fetch(`${API_URL}/steps/update`, {
-//     //         method: 'POST',
-//     //         headers: { 
-//     //             'Content-Type': 'application/json' ,
-//     //             'Authorization': `Bearer ${authToken}`
-//     //         },
-//     //         body: JSON.stringify({
-//     //             steps,
-//     //             date: new Date().toISOString().split('T')[0],
-//     //             time: new Date().toISOString()
-//     //         })
-//     //     });
-//     // } catch (error) {
-//     //     console.error('Step sync error: ', error);
-//     // }
-// };
+// }
+
+export const fetchCharacterData = async () => {
+    const response = await supabase
+        .from("users")
+        .eq('user_id', userId)
+        .single();
+};
 
 export const addFriends = async (friendId) => {
     try {
