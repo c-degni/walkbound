@@ -2,9 +2,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { fetchCharacterData, syncStepsToServer } from "../api";
 
 export default function HomeScreen () {
-    const [stepsToday, setStepsToday] = useState(0);
-    const [stepRate, setStepRate] = useState(0);
-    const [focusedStat, setFocusedStat] = useState(null);
+    
     const [character, setCharacter] = useState({
         level: 1,
         powerRanking: 0,
@@ -17,27 +15,6 @@ export default function HomeScreen () {
         const interval = setInterval(fetchSteps, 60000);
         return () => clearInterval(interval);
     }, []);
-
-    const fetchSteps = () => {
-        const options = {
-            date: new Date().toISOString(),
-            includeManuallyAdded: false
-        };
-
-        AppleHealthKit.getStepCount(options, (err, results) => {
-            if (!err) {
-                setStepsToday(results.value);
-                calculateStepRate(results.value);
-                syncStepsToServer(results.value);
-            }
-        });
-    };
-
-    const calculateStepRate = (steps) => {
-        const now = new Date();
-        const hoursSinceMidnight = now.getHours() + now.getMinutes() / 60;
-        setStepRate(Math.round(steps / (hoursSinceMidnight || 1)));
-    };
 
     const loadCharacter = async () => {
         const data = await fetchCharacterData();

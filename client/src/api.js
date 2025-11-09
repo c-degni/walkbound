@@ -1,4 +1,4 @@
-const API_URL = SERVER_URL; // Will need to define what server url is
+const API_URL = "https://tpfefehfysildbdublnq.supabase.co"; // Will need to define what server url is
 
 let authToken = null;
 
@@ -38,22 +38,29 @@ export const register = async (username, password) => {
 
 export const syncStepsToServer = async (steps) => {
     try {
-        const response = await fetch(`${API_URL}/steps/update`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json' ,
-                'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify({
-                steps,
-                date: new Date().toISOString().split('T')[0],
-                time: new Date().toISOString()
-            })
-        });
-    } catch (error) {
-        console.error('Step sync error: ', error);
+
     }
 };
+
+// export const syncStepsToServer = async (steps) => {
+
+//     // try {
+//     //     const response = await fetch(`${API_URL}/steps/update`, {
+//     //         method: 'POST',
+//     //         headers: { 
+//     //             'Content-Type': 'application/json' ,
+//     //             'Authorization': `Bearer ${authToken}`
+//     //         },
+//     //         body: JSON.stringify({
+//     //             steps,
+//     //             date: new Date().toISOString().split('T')[0],
+//     //             time: new Date().toISOString()
+//     //         })
+//     //     });
+//     // } catch (error) {
+//     //     console.error('Step sync error: ', error);
+//     // }
+// };
 
 export const fetchCharacterData = async () => {
     try {
